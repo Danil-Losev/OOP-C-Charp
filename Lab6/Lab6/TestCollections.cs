@@ -111,41 +111,44 @@ namespace Lab6
             bool foundKeyStringMagazine = dictionaryString.ContainsKey(stringToFind);
             searchTime[5] = Environment.TickCount - start;
 
-            Console.WriteLine(" Search time for Edition: " + searchTime[0]);
-            Console.WriteLine(" Search time for String: " + searchTime[1]);
-            Console.WriteLine(" Search time for Magazine: " + searchTime[2]);
-            Console.WriteLine(" Search time for Key Magazine: " + searchTime[3]);
-            Console.WriteLine(" Search time for String Magazine: " + searchTime[4]);
-            Console.WriteLine(" Search time for Key String Magazine: " + searchTime[5]);
-
             if (foundEdition)
             {
+                Console.WriteLine("\n Search time for Edition: " + searchTime[0]);
                 Console.WriteLine(" Found Edition" + editions[elementPosition].ToString());
             }
             Console.Write(' ');
             if (foundString)
             {
-                Console.WriteLine("Found String" + strings[elementPosition]);
+                Console.WriteLine("\n Search time for String: " + searchTime[1]);
+                Console.WriteLine(" Found String" + strings[elementPosition]);
             }
             Console.Write(' ');
             if (foundMagazine)
             {
-                Console.WriteLine("Found Magazine" + dictionary[editionToFind].ToShortString());
+                Console.WriteLine("\n Search time for Magazine: " + searchTime[2]);
+                Console.WriteLine(" Found Magazine" + dictionary[editionToFind].ToShortString());
             }
             Console.Write(' ');
             if (foundKeyMagazine)
             {
-                Console.WriteLine("Found Key Magazine" + dictionary[editionToFind].ToShortString());
+                Console.WriteLine("\n Search time for Key Magazine: " + searchTime[3]);
+                Console.WriteLine(" Found Key Magazine" + dictionary[editionToFind].ToShortString());
             }
             Console.Write(' ');
             if (foundStringMagazine)
             {
-                Console.WriteLine("Found String Magazine" + dictionaryString[stringToFind].ToShortString());
+                Console.WriteLine("\n Search time for String Magazine: " + searchTime[4]);
+                Console.WriteLine(" Found String Magazine" + dictionaryString[stringToFind].ToShortString());
             }
             Console.Write(' ');
             if (foundKeyStringMagazine)
             {
-                Console.WriteLine("Found Key String Magazine" + dictionaryString[stringToFind].ToShortString());
+                Console.WriteLine("\n Search time for Key String Magazine: " + searchTime[5]);
+                Console.WriteLine(" Found Key String Magazine" + dictionaryString[stringToFind].ToShortString());
+            }
+            else
+            {
+                Console.WriteLine("Element not found");
             }
 
         }

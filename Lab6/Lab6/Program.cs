@@ -56,7 +56,7 @@ internal class Program
         }
 
 
-        TestCollections testEditionAndMagazine = new TestCollections(1000);
+        TestCollections testEditionAndMagazine = new TestCollections(2000);
 
         Console.WriteLine("\nSearching first element");
         testEditionAndMagazine.SearchTime(TestCollections.Positions.Start);
