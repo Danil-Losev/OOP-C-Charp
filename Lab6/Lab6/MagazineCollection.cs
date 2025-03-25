@@ -14,7 +14,7 @@ namespace Lab6
             magazines = new List<Magazine>(){new Magazine("Forbes", Frequency.Monthly, new DateTime(2020, 1, 1), 1000),
               new Magazine("Time", Frequency.Weekly, new DateTime(2020, 1, 1), 500) };
         }
-        public void AddMagazines(params Magazine [] newMagazines)
+        public void AddMagazines(params Magazine[] newMagazines)
         {
             if (magazines == null)
             {
@@ -41,6 +41,37 @@ namespace Lab6
             return result;
         }
 
+        // добавил сам 
+        public int CollectionLenth 
+        {
+            get
+            {
+                return magazines.Count;
+            }
+        }
+        public Magazine this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= magazines.Count)
+                {
+                    throw new Exception("Index out of range");
+                }
+                return magazines[index];
+            }
+            set
+            {
+                if (index < 0 || index >= magazines.Count)
+                {
+                    throw new Exception("Index out of range");
+                }
+                magazines[index] = (Magazine)value;
+            }
+        }
+        //
+
+
+
         private static int nameCompare(Magazine m1, Magazine m2)
         {
             return m1.Edition.CompareTo(m2.Edition);
@@ -60,6 +91,50 @@ namespace Lab6
         public void SortByCirculation()
         {
             magazines.Sort(new EditionComparer());
+        }
+
+        public double MaxRating
+        {
+            get
+            {
+                double MaxRating = 0;
+                foreach (Magazine magazine in magazines)
+                {
+                    if (magazine.Rating > MaxRating)
+                    {
+                        MaxRating = magazine.Rating;
+                    }
+                }
+                return MaxRating;
+            }
+        }
+
+        public IEnumerable<Magazine> GetMonthlyMagazine
+        {
+            get
+            {
+                foreach (Magazine magazine in magazines)
+                {
+                    if (magazine.Frequency == Frequency.Monthly)
+                    {
+                        yield return magazine;
+                    }
+
+                }
+            }
+        }
+
+        public List<Magazine> RatingGroup(double value)
+        {
+            List<Magazine> magazinesWithRating = new List<Magazine>();
+            foreach (Magazine magazine in magazines)
+            {
+                if (magazine.Rating >= value)
+                {
+                    magazinesWithRating.Add(magazine);
+                }
+            }
+            return magazinesWithRating;
         }
     }
 }
