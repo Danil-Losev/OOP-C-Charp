@@ -11,7 +11,7 @@ namespace Lab7
         public string NameOfChangedCollection { get; set; }
         public string TypeOfChangedEllement { get; set; }
         public int NumberOfChangedEllement { get; set; }
-        public MagazineListHandlerEventArgs(string nameOfChangedCollection, string typeOfChangedEllement, int numberOfChangedEllement)
+        public MagazineListHandlerEventArgs(string nameOfChangedCollection, string typeOfChangedEllement, int numberOfChangedEllement) : base()
         {
             NameOfChangedCollection = nameOfChangedCollection;
             TypeOfChangedEllement = typeOfChangedEllement;

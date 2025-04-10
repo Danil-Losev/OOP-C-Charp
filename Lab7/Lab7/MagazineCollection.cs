@@ -17,6 +17,7 @@ namespace Lab7
         {
             magazines = new List<Magazine>(){new Magazine("Forbes", Frequency.Monthly, new DateTime(2020, 1, 1), 1000),
               new Magazine("Time", Frequency.Weekly, new DateTime(2020, 1, 1), 500) };
+            OnMagazineAdder(NameOfCollection, "Added default magazines", 2);
         }
         public void AddMagazines(params Magazine[] newMagazines)
         {
@@ -25,6 +26,7 @@ namespace Lab7
                 magazines = new List<Magazine>();
             }
             magazines.AddRange(newMagazines);
+            OnMagazineAdder(NameOfCollection, "Added magazines", newMagazines.Length);
         }
         public override string ToString()
         {
@@ -128,6 +130,7 @@ namespace Lab7
                 return false;
             }
             magazines[index] = magazine;
+            OnMagazineReplaced(NameOfCollection, "Replaced magazine", index);
             return true;
         }
 
@@ -147,11 +150,34 @@ namespace Lab7
                 {
                     throw new Exception("Index out of range");
                 }
-                magazines[index] = (Magazine)value;
+                OnMagazineReplaced(NameOfCollection, "Set magazine", index);
+                magazines[index] = value;
             }
         }
 
         public event MagazineListHandler MagazineAdder;
         public event MagazineListHandler MagazineReplaced;
+
+        protected virtual void OnMagazineAdder(string nameOfChangedCollection, string typeOfChangedEllement, int numberOfChangedEllement)
+        {
+            if (MagazineAdder != null)
+            {
+                MagazineListHandlerEventArgs args = new MagazineListHandlerEventArgs(nameOfChangedCollection, typeOfChangedEllement, numberOfChangedEllement);
+                MagazineAdder(this, args);
+            }
+        }
+
+        protected virtual void OnMagazineReplaced(string nameOfChangedCollection, string typeOfChangedEllement, int numberOfChangedEllement)
+        {
+            if (MagazineReplaced != null)
+            {
+                MagazineListHandlerEventArgs args = new MagazineListHandlerEventArgs(nameOfChangedCollection, typeOfChangedEllement, numberOfChangedEllement);
+                MagazineReplaced(this, args);
+            }
+
+
+
+
+        }
     }
 }
