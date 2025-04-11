@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lab7
 {
-    internal interface IRateAndCopy
+    public interface IRateAndCopy
     {
         double Rating { get; }
         object DeepCopy();

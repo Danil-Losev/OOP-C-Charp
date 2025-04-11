@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Lab7
 {
-    internal class Magazine : Edition, IRateAndCopy, IEnumerable
+    public class Magazine : Edition, IRateAndCopy, IEnumerable
     {
         private Frequency frequency;
         private List<Article> articles;

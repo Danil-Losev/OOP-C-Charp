@@ -8,7 +8,7 @@ namespace Lab7
 {
     public delegate void MagazineListHandler(object source, MagazineListHandlerEventArgs args);
 
-    internal class MagazineCollection
+    public class MagazineCollection
     {
 
 
@@ -17,7 +17,7 @@ namespace Lab7
         {
             magazines = new List<Magazine>(){new Magazine("Forbes", Frequency.Monthly, new DateTime(2020, 1, 1), 1000),
               new Magazine("Time", Frequency.Weekly, new DateTime(2020, 1, 1), 500) };
-            OnMagazineAdder(NameOfCollection, "Added default magazines", 2);
+            OnMagazineAdded(NameOfCollection, "Added default magazines", 2);
         }
         public void AddMagazines(params Magazine[] newMagazines)
         {
@@ -26,7 +26,7 @@ namespace Lab7
                 magazines = new List<Magazine>();
             }
             magazines.AddRange(newMagazines);
-            OnMagazineAdder(NameOfCollection, "Added magazines", newMagazines.Length);
+            OnMagazineAdded(NameOfCollection, "Added magazines", newMagazines.Length);
         }
         public override string ToString()
         {
@@ -155,15 +155,15 @@ namespace Lab7
             }
         }
 
-        public event MagazineListHandler MagazineAdder;
+        public event MagazineListHandler MagazineAdded;
         public event MagazineListHandler MagazineReplaced;
 
-        protected virtual void OnMagazineAdder(string nameOfChangedCollection, string typeOfChangedEllement, int numberOfChangedEllement)
+        protected virtual void OnMagazineAdded(string nameOfChangedCollection, string typeOfChangedEllement, int numberOfChangedEllement)
         {
-            if (MagazineAdder != null)
+            if (MagazineAdded != null)
             {
                 MagazineListHandlerEventArgs args = new MagazineListHandlerEventArgs(nameOfChangedCollection, typeOfChangedEllement, numberOfChangedEllement);
-                MagazineAdder(this, args);
+                MagazineAdded(this, args);
             }
         }
 

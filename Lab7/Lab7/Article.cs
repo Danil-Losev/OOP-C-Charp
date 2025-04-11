@@ -13,7 +13,7 @@ namespace Lab7
         Yearly
     }
 
-    internal class Article : IRateAndCopy
+    public class Article : IRateAndCopy
     {
         public Person Author { get; set; }
         public string Title { get; set; }
