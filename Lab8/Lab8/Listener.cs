@@ -6,30 +6,21 @@ using System.Threading.Tasks;
 
 namespace Lab8
 {
-    public class Listener
+    public class Listener<TKey>
     {
         private List<ListEntry> entries;
-
         public Listener()
         {
             entries = new List<ListEntry>();
         }
-
-        private void HandleMagazineAdded(object source, MagazineListHandlerEventArgs args)
+        public void OnMagazinesChanged (object source, MagazinesChangedEventArgs<TKey> args)
         {
-            ListEntry entry = new ListEntry(args.NameOfChangedCollection, args.TypeOfChangedEllement, args.NumberOfChangedEllement);
+            ListEntry entry = new ListEntry(args.NameOfCollection, args.TypeOfUpdate, args.SourceOfUpdate, (string)(object)args.KeyOfElement);
             entries.Add(entry);
         }
-        private void HandleMagazineReplaced(object source, MagazineListHandlerEventArgs args)
+        public void Subscribe(MagazineCollection<TKey> collection)
         {
-            ListEntry entry = new ListEntry(args.NameOfChangedCollection, args.TypeOfChangedEllement, args.NumberOfChangedEllement);
-            entries.Add(entry);
-        }
-
-        public void Subscribe(MagazineCollection collection)
-        {
-            collection.MagazineAdded += HandleMagazineAdded;
-            collection.MagazineReplaced += HandleMagazineReplaced;
+            collection.MagazinesChanged += OnMagazinesChanged;
         }
 
         public override string ToString()

@@ -110,7 +110,7 @@ namespace Lab8
 
         protected void OnPropertyChanged(string propertyName)
         {
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -188,6 +189,8 @@ namespace Lab8
             magazines = new Dictionary<TKey, Magazine>();
             magazines.Add((TKey)(object)"Forbes", new Magazine("Forbes", Frequency.Monthly, new DateTime(2020, 1, 1), 1000));
             magazines.Add((TKey)(object)"Time", new Magazine("Time", Frequency.Weekly, new DateTime(2020, 1, 1), 500));
+            magazines[(TKey)(object)"Forbes"].PropertyChanged += OnPropertyChanged;
+            magazines[(TKey)(object)"Time"].PropertyChanged += OnPropertyChanged;
             OnMagazinesChanged(NameOfCollection, Update.Add, " ", (TKey)(object)"Forbes");
             OnMagazinesChanged(NameOfCollection, Update.Add, " ", (TKey)(object)"Time");
         }
@@ -201,6 +204,7 @@ namespace Lab8
             foreach (Magazine magazine in newMagazines)
             {
                 magazines.Add((TKey)(object)magazine.Name, magazine);
+                magazines[(TKey)(object)magazine.Name].PropertyChanged += OnPropertyChanged;
                 OnMagazinesChanged(NameOfCollection, Update.Add, " ", (TKey)(object)magazine.Name);
             }
         }
@@ -232,6 +236,7 @@ namespace Lab8
                     throw new Exception("Key not found");
                 }
                 magazines[key] = value;
+                magazines[key].PropertyChanged += OnPropertyChanged;
                 OnMagazinesChanged(NameOfCollection, Update.Replace, " ", key);
             }
         }
@@ -240,19 +245,18 @@ namespace Lab8
         {
             if (! magazines.ContainsValue(oldMagazine)) return false;
 
-            TKey? keyOfOldElement = default(TKey);
-
             foreach (KeyValuePair<TKey, Magazine> magazine in magazines)
             {
                 if (magazine.Value == oldMagazine)
                 {
-                    keyOfOldElement = magazine.Key;
+                    magazine.Value.PropertyChanged -= OnPropertyChanged;
                     magazines.Remove(magazine.Key);
-                    magazines.Add(keyOfOldElement, newMagazine);
+                    magazines.Add((TKey)(object)newMagazine.Name, newMagazine);
+                    newMagazine.PropertyChanged += OnPropertyChanged;
                     break;
                 }
             }
-            OnMagazinesChanged(NameOfCollection, Update.Replace, " ", keyOfOldElement);
+            OnMagazinesChanged(NameOfCollection, Update.Replace, " ", (TKey)(object)newMagazine.Name);
             return true;
         }
 
@@ -264,6 +268,18 @@ namespace Lab8
             {
                 MagazinesChangedEventArgs<TKey> args = new MagazinesChangedEventArgs<TKey>(nameOfCollection, typeOfUpdate, sourceOfUpdate, keyOfElement);
                 MagazinesChanged(this, args);
+            }
+        }
+
+        protected void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            foreach (KeyValuePair<TKey, Magazine> magazine in magazines)
+            {
+                if (magazine.Value == sender)
+                {
+                    OnMagazinesChanged(NameOfCollection, Update.Property, args.PropertyName , magazine.Key);
+                    break;
+                }
             }
         }
     }

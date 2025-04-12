@@ -9,19 +9,24 @@ namespace Lab8
     public class ListEntry
     {
         public string NameOfCollection { get; set; }
-        public string NameOfEvent { get; set; }
-        public int NumberOfChangedElement { get; set; }
-        public ListEntry(string nameOfCollection, string nameOfEvent, int numberOfChangedElement)
+        public Update NameOfUpdate { get; set; }
+        public string NameOfProperty { get; set; }
+        public string TKey { get; set; }
+
+        public ListEntry(string nameOfCollection, Update nameOfUpdate, string nameOfProperty, string tKey)
         {
             NameOfCollection = nameOfCollection;
-            NameOfEvent = nameOfEvent;
-            NumberOfChangedElement = numberOfChangedElement;
+            NameOfUpdate = nameOfUpdate;
+            NameOfProperty = nameOfProperty;
+            TKey = tKey;
         }
+
         public override string ToString()
         {
-            return "Name of collection: " + NameOfCollection + ", " +
-                   "Name of event: " + NameOfEvent + ", " +
-                   "Number of changed element: " + NumberOfChangedElement;
+            return "Name Of Collection: " + NameOfCollection + " | " +
+                   "Name Of Update: " + NameOfUpdate.ToString() + " | " +
+                   "Name Of Property: " + NameOfProperty + " | " +
+                   "TKey: " + TKey;
         }
     }
 }
