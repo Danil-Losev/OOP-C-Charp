@@ -1,32 +1,49 @@
 ﻿
 using System.Collections;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml.Serialization;
 
 namespace Lab9
 {
+    [DataContract(Namespace = "http://schemas.datacontract.org/2004/07/Lab9")]
+    [Serializable]
+    [XmlType("Magazine")]
     public class Magazine : Edition, IRateAndCopy, IEnumerable
     {
         private Frequency frequency;
         private List<Article> articles;
         private List<Person> editors;
 
+        [XmlAttribute]
+        [DataMember]
         public Frequency Frequency
         {
             get { return frequency; }
             set { frequency = value; }
         }
 
+        [DataMember]
+        [XmlArray("Articles")]
+        [XmlArrayItem("Article")]
         public List<Article> Articles
         {
             get { return articles; }
             set { articles = value; }
         }
+
+        [DataMember]
+        [XmlArray("Editors")]
+        [XmlArrayItem("Editor")]
         public List<Person> Editors
         {
             get { return editors; }
             set { editors = value; }
         }
 
+        [XmlIgnore]
         public Edition Edition
         {
             get
@@ -45,7 +62,7 @@ namespace Lab9
         {
             Name = "N/A";
             Frequency = Frequency.Monthly;
-            ReleaseDate = DateTime.Now;
+            ReleaseDate = new DateTime();
             Circulation = 0;
             Articles = new List<Article>();
             Editors = new List<Person>();
@@ -74,7 +91,7 @@ namespace Lab9
                 Editors = editors;
             }
         }
-
+        [XmlIgnore]
         public double Rating
         {
             get
@@ -179,26 +196,12 @@ namespace Lab9
             return Name.GetHashCode() + Frequency.GetHashCode() + ReleaseDate.GetHashCode() + Circulation.GetHashCode() + Articles.GetHashCode() + Editors.GetHashCode();
         }
 
-        public object DeepCopy()
-        {
-            List<Article> articlesCopy = new List<Article>();
-            foreach (Article article in Articles)
-            {
-                articlesCopy.Add((Article)article.DeepCopy());
-            }
-            List<Person> editorsCopy = new List<Person>();
-            foreach (Person person in Editors)
-            {
-                editorsCopy.Add((Person)person.DeepCopy());
-            }
-            return new Magazine(Name, Frequency, ReleaseDate, Circulation, articlesCopy, editorsCopy);
-        }
 
         object IRateAndCopy.DeepCopy()
         {
             return DeepCopy();
         }
-
+        [XmlIgnore]
         double IRateAndCopy.Rating
         {
             get { return Rating; }
@@ -266,10 +269,24 @@ namespace Lab9
         }
 
         // Lab 9
+        public Magazine DeepCopy()
+        {
+            List<Article> articlesCopy = new List<Article>();
+            foreach (Article article in Articles)
+            {
+                articlesCopy.Add((Article)article.DeepCopy());
+            }
+            List<Person> editorsCopy = new List<Person>();
+            foreach (Person person in Editors)
+            {
+                editorsCopy.Add((Person)person.DeepCopy());
+            }
+            return new Magazine(Name, Frequency, ReleaseDate, Circulation, articlesCopy, editorsCopy);
+        }
 
         public bool Save(string fileName)
         {
-            StreamWriter writer = default;
+            StreamWriter writer = null;
             try
             {
                 writer = new StreamWriter(fileName);
@@ -294,15 +311,14 @@ namespace Lab9
             }
             finally
             {
-
                 if (writer != null) writer.Close();
             }
         }
 
         public bool Load(string fileName)
         {
-            Magazine oldMagazine = (Magazine)DeepCopy();
-            StreamReader reader = default;
+            Magazine oldMagazine = DeepCopy();
+            StreamReader reader = null;
             try
             {
                 reader = new StreamReader(fileName);
@@ -474,8 +490,199 @@ namespace Lab9
             Console.WriteLine("Article added successfully.");
             return true;
         }
-    }
 
+        public bool BinarySerealization(string fileName)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = null;
+            try
+            {
+                stream = new FileStream(fileName, FileMode.Create);
+#pragma warning disable SYSLIB0011 // Тип или член устарел
+                formatter.Serialize(stream, this);
+#pragma warning restore SYSLIB0011 // Тип или член устарел
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error serializing magazine: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                if (stream != null) stream.Close();
+            }
+        }
+
+        public bool BinaryDeserealization(string fileName)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = null;
+            try
+            {
+                stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+#pragma warning disable SYSLIB0011 // Тип или член устарел
+                Magazine magazine = (Magazine)formatter.Deserialize(stream);
+#pragma warning restore SYSLIB0011 // Тип или член устарел
+                Name = magazine.Name;
+                Frequency = magazine.Frequency;
+                ReleaseDate = magazine.ReleaseDate;
+                Circulation = magazine.Circulation;
+                Articles.Clear();
+                Editors.Clear();
+                foreach (Article article in magazine.Articles)
+                {
+                    Articles.Add((Article)article.DeepCopy());
+                }
+                foreach (Person person in magazine.Editors)
+                {
+                    Editors.Add((Person)person.DeepCopy());
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error opening file: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                if (stream != null) stream.Close();
+            }
+        }
+
+
+        public void Add(object item)
+        {
+            if (item is Article article)
+            {
+                Articles.Add(article);
+            }
+            else if (item is Person editor)
+            {
+                Editors.Add(editor);
+            }
+            else
+            {
+                throw new ArgumentException("Only objects of type Article or Person can be added to the Magazine.");
+            }
+        }
+
+        public bool XmlSerialization(string fileName)
+        {
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Magazine));
+            FileStream stream = null;
+            try
+            {
+                stream = new FileStream(fileName, FileMode.Create, FileAccess.Write);
+                xmlSerializer.Serialize(stream, this);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error serializing magazine: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                if (stream != null) stream.Close();
+            }
+        }
+
+
+        public bool XmlDeserealization(string fileName)
+        {
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Magazine));
+            FileStream stream = null;
+            try
+            {
+                stream = new FileStream(fileName, FileMode.Open);
+                Magazine magazine = (Magazine)xmlSerializer.Deserialize(stream);
+                Name = magazine.Name;
+                Frequency = magazine.Frequency;
+                ReleaseDate = magazine.ReleaseDate;
+                Circulation = magazine.Circulation;
+                Articles.Clear();
+                Editors.Clear();
+                foreach (Article article in magazine.Articles)
+                {
+                    Articles.Add((Article)article.DeepCopy());
+                }
+                foreach (Person person in magazine.Editors)
+                {
+                    Editors.Add((Person)person.DeepCopy());
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error serializing magazine: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                if (stream != null) stream.Close();
+            }
+        }
+
+        public bool DataContractSerialization(string fileName)
+        {
+            DataContractSerializer serializer = new DataContractSerializer(typeof(Magazine));
+            FileStream stream = null;
+            try
+            {
+                stream = new FileStream(fileName, FileMode.Create, FileAccess.Write);
+                serializer.WriteObject(stream, this);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error serializing magazine: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                if (stream != null) stream.Close();
+            }
+        }
+
+        public bool DataContractDeserialization(string fileName)
+        {
+            DataContractSerializer serializer = new DataContractSerializer(typeof(Magazine));
+            FileStream stream = null;
+            try
+            {
+                stream = new FileStream(fileName, FileMode.Open);
+                Magazine magazine = (Magazine)serializer.ReadObject(stream);
+                Name = magazine.Name;
+                Frequency = magazine.Frequency;
+                ReleaseDate = magazine.ReleaseDate;
+                Circulation = magazine.Circulation;
+                Articles.Clear();
+                Editors.Clear();
+                foreach (Article article in magazine.Articles)
+                {
+                    Articles.Add((Article)article.DeepCopy());
+                }
+                foreach (Person person in magazine.Editors)
+                {
+                    Editors.Add((Person)person.DeepCopy());
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error serializing magazine: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                if (stream != null) stream.Close();
+            }
+        }
+
+
+    }
     file class EnumeratorForMagazine : IEnumerator
     {
         private Magazine thisMagazine;

@@ -13,7 +13,7 @@
                     new Article(Danil, "Top 5 programming languages", 5),
                 },
                 new List<Person> { Danil });
-            Magazine TimesCopy = (Magazine)Times.DeepCopy();
+            Magazine TimesCopy = Times.DeepCopy();
 
             Console.WriteLine("Times:\n" + Times.ToString());
             Console.WriteLine("TimesCopy:\n" + TimesCopy.ToString());
@@ -72,8 +72,37 @@
                 Console.Write("> ");
                 answer = Console.ReadLine();
             }
+            Console.Clear();
 
-            Console.WriteLine("\nRecursive directory check");
+            Times.BinarySerealization("Times.dat");
+            Console.WriteLine("Magazine after serialization:\n" + Times.ToString());
+            
+            Magazine TimesDeserialisation = new Magazine();
+            TimesDeserialisation.BinaryDeserealization("Times.dat");
+            Console.WriteLine("\nMagazine after deserialization:\n" + TimesDeserialisation.ToString());
+      
+            Console.ReadLine();
+            Console.Clear();
+
+            Times.XmlSerialization("Times.txt");
+            Console.WriteLine("Magazine after xml serialization:\n" + Times.ToString());
+            Magazine TimesXmlDeserialization = new Magazine();
+            TimesXmlDeserialization.XmlDeserealization("Times.txt");
+            Console.WriteLine("\nMagazine after xml deserialization:\n" + TimesXmlDeserialization.ToString());
+            
+            Console.ReadLine();
+            Console.Clear();
+
+            Times.DataContractSerialization("DataTimes.txt");
+            Console.WriteLine("Magazine after data contract serialization:\n" + Times.ToString());
+            Magazine TimesDataContractDeserialization = new Magazine();
+            TimesDataContractDeserialization.DataContractDeserialization("DataTimes.txt");
+            Console.WriteLine("\nMagazine after data contract deserialization:\n" + TimesDataContractDeserialization.ToString());
+
+            Console.ReadLine();
+            Console.Clear();
+
+            Console.WriteLine("Recursive directory check");
             RecursiveDirectoryChecker(Directory.GetCurrentDirectory());
 
         }

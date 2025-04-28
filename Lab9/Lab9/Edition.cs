@@ -1,5 +1,7 @@
 ﻿
 using System.ComponentModel;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace Lab9
 {
@@ -10,17 +12,25 @@ namespace Lab9
         Property
     }
 
+    [DataContract(Namespace = "http://schemas.datacontract.org/2004/07/Lab9")]
+    [Serializable]
+    [XmlType("Edition")]
     public class Edition: IComparable, IComparer<Edition>, INotifyPropertyChanged
     {
         protected string name;
         protected System.DateTime releaseDate;
         protected int circulation;
 
+        [DataMember]
+        [XmlAttribute("Name")]
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
+
+        [DataMember]
+        [XmlAttribute("ReleaseDate")]
         public System.DateTime ReleaseDate
         {
             get { return releaseDate; }
@@ -30,6 +40,9 @@ namespace Lab9
                 OnPropertyChanged("ReleaseDate");
             }
         }
+
+        [DataMember]
+        [XmlAttribute("Circulation")]
         public int Circulation
         {
             get { return circulation; }
@@ -47,7 +60,7 @@ namespace Lab9
         public Edition()
         {
             Name = "N/A";
-            ReleaseDate = DateTime.Now;
+            ReleaseDate = new DateTime();
             Circulation = 0;
         }
 
@@ -105,7 +118,7 @@ namespace Lab9
         }
 
         // Lab 8
-
+        [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)

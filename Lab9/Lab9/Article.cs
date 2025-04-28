@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Lab9
 {
+    [DataContract(Namespace = "http://schemas.datacontract.org/2004/07/Lab9")]
+    [Serializable]
     public enum Frequency
     {
         Weekly,
@@ -13,15 +17,18 @@ namespace Lab9
         Yearly
     }
 
+    [DataContract]
+    [Serializable]
+    [XmlType("Article")]
     public class Article : IRateAndCopy
     {
-        public Person Author { get; set; }
-        public string Title { get; set; }
-        public double Rating { get; set; }
+        [DataMember] [XmlElement("Author")] public Person Author { get; set; }
+        [DataMember] [XmlAttribute] public string Title { get; set; }
+        [DataMember] [XmlAttribute] public double Rating { get; set; }
 
         public Article()
         {
-            Author = new Person(); // Assuming Person has a parameterless constructor
+            Author = new Person(); 
             Title = "N/A";
             Rating = 0;
         }
@@ -48,6 +55,7 @@ namespace Lab9
             return DeepCopy();
         }
 
+        [XmlIgnore]
         double IRateAndCopy.Rating
         {
             get { return Rating; }

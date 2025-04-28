@@ -1,35 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Lab9
 {
+    [DataContract(Namespace = "http://schemas.datacontract.org/2004/07/Lab9")]
+    [Serializable]
+    [XmlType("Person")]
     public class Person
     {
         private string name;
         private string surname;
         private System.DateTime birthDate;
 
+        [DataMember]
+        [XmlAttribute("Name")]
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
 
+        [DataMember]
+        [XmlAttribute("Surname")]
         public string Surname
         {
             get { return surname; }
             set { surname = value; }
         }
 
+        [DataMember]
+        [XmlAttribute("BirthDate")]
         public System.DateTime BirthDate
         {
             get { return birthDate; }
             set { birthDate = value; }
         }
 
+        [XmlIgnore]
         public int BirthYear
         {
             get { return birthDate.Year; }
@@ -40,7 +52,7 @@ namespace Lab9
         {
             name = "N/A";
             surname = "N/A";
-            birthDate = System.DateTime.Now;
+            birthDate = new DateTime();
         }
 
         public Person(string name, string surname, System.DateTime birthDate)
