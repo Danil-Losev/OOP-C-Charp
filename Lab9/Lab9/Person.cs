@@ -8,58 +8,46 @@ using System.Xml.Serialization;
 
 namespace Lab9
 {
-    [DataContract(Namespace = "http://schemas.datacontract.org/2004/07/Lab9")]
+    [DataContract]
     [Serializable]
     [XmlType("Person")]
     public class Person
     {
-        private string name;
-        private string surname;
-        private System.DateTime birthDate;
+        //private string name;
+        //private string surname;
+        //private System.DateTime birthDate;
 
         [DataMember]
-        [XmlAttribute("Name")]
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
+        [XmlElement("Name")]
+        public string Name { get; set; }
 
         [DataMember]
-        [XmlAttribute("Surname")]
-        public string Surname
-        {
-            get { return surname; }
-            set { surname = value; }
-        }
+        [XmlElement("Surname")]
+        public string Surname { get; set; }
 
         [DataMember]
-        [XmlAttribute("BirthDate")]
-        public System.DateTime BirthDate
-        {
-            get { return birthDate; }
-            set { birthDate = value; }
-        }
+        [XmlElement("BirthDate")]
+        public System.DateTime BirthDate{get;set;}
 
         [XmlIgnore]
         public int BirthYear
         {
-            get { return birthDate.Year; }
-            set { birthDate = new DateTime(value, birthDate.Month, birthDate.Day); }
+            get { return BirthDate.Year; }
+            set { BirthDate = new DateTime(value, BirthDate.Month, BirthDate.Day); }
         }
 
         public Person()
         {
-            name = "N/A";
-            surname = "N/A";
-            birthDate = new DateTime();
+            Name = "N/A";
+            Surname = "N/A";
+            BirthDate = new DateTime();
         }
 
         public Person(string name, string surname, System.DateTime birthDate)
         {
-            this.name = name;
-            this.surname = surname;
-            this.birthDate = birthDate;
+            this.Name = name;
+            this.Surname = surname;
+            this.BirthDate = birthDate;
         }
 
         public override string ToString()

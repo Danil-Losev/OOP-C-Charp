@@ -1,4 +1,6 @@
-﻿namespace Lab9
+﻿using System.Xml.Serialization;
+
+namespace Lab9
 {
     public class Program
     {
@@ -74,29 +76,29 @@
             }
             Console.Clear();
 
-            Times.BinarySerealization("Times.dat");
+            Times.BinarySerealization("DatTimes.dat");
             Console.WriteLine("Magazine after serialization:\n" + Times.ToString());
-            
+
             Magazine TimesDeserialisation = new Magazine();
-            TimesDeserialisation.BinaryDeserealization("Times.dat");
+            TimesDeserialisation.BinaryDeserealization("DatTimes.dat");
             Console.WriteLine("\nMagazine after deserialization:\n" + TimesDeserialisation.ToString());
-      
+
             Console.ReadLine();
             Console.Clear();
 
-            Times.XmlSerialization("Times.txt");
+            Times.XmlSerialization("XmlTimes.xml");
             Console.WriteLine("Magazine after xml serialization:\n" + Times.ToString());
             Magazine TimesXmlDeserialization = new Magazine();
-            TimesXmlDeserialization.XmlDeserealization("Times.txt");
+            TimesXmlDeserialization.XmlDeserealization("XmlTimes.xml");
             Console.WriteLine("\nMagazine after xml deserialization:\n" + TimesXmlDeserialization.ToString());
-            
+
             Console.ReadLine();
             Console.Clear();
 
-            Times.DataContractSerialization("DataTimes.txt");
+            Times.DataContractSerialization("DataTimes.xml");
             Console.WriteLine("Magazine after data contract serialization:\n" + Times.ToString());
             Magazine TimesDataContractDeserialization = new Magazine();
-            TimesDataContractDeserialization.DataContractDeserialization("DataTimes.txt");
+            TimesDataContractDeserialization.DataContractDeserialization("DataTimes.xml");
             Console.WriteLine("\nMagazine after data contract deserialization:\n" + TimesDataContractDeserialization.ToString());
 
             Console.ReadLine();
@@ -128,6 +130,63 @@
                 }
                 Console.WriteLine("Dir: " + directory.Name);
                 RecursiveDirectoryChecker(directory.FullName, level + 1);
+            }
+        }
+
+        public static void PersonSerialize()
+        {
+            FileStream fs = new FileStream("Person.xml", FileMode.Create);
+            XmlSerializer xs = new XmlSerializer(typeof(Person));
+            Person person = new Person("Danil", "Losev", new DateTime(2005, 10, 16));
+            xs.Serialize(fs, person);
+        }
+
+        public static void ArticleSerialize()
+        {
+            FileStream fs = new FileStream("Article.xml", FileMode.Create);
+            XmlSerializer xs = new XmlSerializer(typeof(Article));
+            Article article = new Article(new Person("Danil", "Losev", new DateTime(2005, 10, 16)), "Top 10 programming languages", 5);
+            xs.Serialize(fs, article);
+        }
+
+        public static void EditionSerialize()
+        {
+            FileStream fs = new FileStream("Edition.xml", FileMode.Create);
+            XmlSerializer xs = new XmlSerializer(typeof(Edition));
+            Edition edition = new Edition("Times", new DateTime(2000, 1, 1), 1000);
+            xs.Serialize(fs, edition);
+        }
+
+        public static void MagazineSerialize()
+        {
+            FileStream fs = new FileStream("Magazine.xml", FileMode.Create);
+            XmlSerializer xs = new XmlSerializer(typeof(Magazine));
+            Magazine magazine = new Magazine("Times", Frequency.Weekly, new DateTime(2000, 1, 1), 1000,
+                new List<Article>
+                {
+                    new Article(new Person("Danil", "Losev", new DateTime(2005, 10, 16)), "Top 10 programming languages", 5),
+                    new Article(new Person("Danil", "Losev", new DateTime(2005, 10, 16)), "Top 5 programming languages", 5),
+                },
+                new List<Person> { new Person("Danil", "Losev", new DateTime(2005, 10, 16)) });
+            xs.Serialize(fs, magazine);
+        }
+
+        public static void ArticleListSerialize()
+        {
+            try
+            {
+                FileStream fs = new FileStream("ArticleList.xml", FileMode.Create);
+                XmlSerializer xs = new XmlSerializer(typeof(List<Article>));
+                List<Article> articles = new List<Article>
+            {
+                new Article(new Person("Danil", "Losev", new DateTime(2005, 10, 16)), "Top 10 programming languages", 5),
+                new Article(new Person("Danil", "Losev", new DateTime(2005, 10, 16)), "Top 5 programming languages", 5)
+            };
+                xs.Serialize(fs, articles);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
             }
         }
     }

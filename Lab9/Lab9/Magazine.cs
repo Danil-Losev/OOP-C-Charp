@@ -4,44 +4,30 @@ using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System;
+using System.IO;
 using System.Xml.Serialization;
 
 namespace Lab9
 {
-    [DataContract(Namespace = "http://schemas.datacontract.org/2004/07/Lab9")]
-    [Serializable]
+    [DataContract]
+    [Serializable()]
     [XmlType("Magazine")]
-    public class Magazine : Edition, IRateAndCopy, IEnumerable
+    public class Magazine : Edition, IRateAndCopy
     {
-        private Frequency frequency;
-        private List<Article> articles;
-        private List<Person> editors;
-
-        [XmlAttribute]
         [DataMember]
-        public Frequency Frequency
-        {
-            get { return frequency; }
-            set { frequency = value; }
-        }
+        [XmlAttribute("Name")]
+        public Frequency Frequency{get;set;}
 
         [DataMember]
         [XmlArray("Articles")]
         [XmlArrayItem("Article")]
-        public List<Article> Articles
-        {
-            get { return articles; }
-            set { articles = value; }
-        }
+        public List<Article> Articles{ get;set;}
 
         [DataMember]
         [XmlArray("Editors")]
         [XmlArrayItem("Editor")]
-        public List<Person> Editors
-        {
-            get { return editors; }
-            set { editors = value; }
-        }
+        public List<Person> Editors{get;set;}
 
         [XmlIgnore]
         public Edition Edition
@@ -58,12 +44,9 @@ namespace Lab9
             }
         }
 
-        public Magazine()
+        public Magazine() : base()
         {
-            Name = "N/A";
             Frequency = Frequency.Monthly;
-            ReleaseDate = new DateTime();
-            Circulation = 0;
             Articles = new List<Article>();
             Editors = new List<Person>();
         }
@@ -91,35 +74,38 @@ namespace Lab9
                 Editors = editors;
             }
         }
+
         [XmlIgnore]
         public double Rating
         {
             get
             {
                 double rating = 0;
-                foreach (Article article in articles)
+                foreach (Article article in Articles)
                 {
                     rating += article.Rating;
                 }
-                if (articles.Count == 0)
+                if (Articles.Count == 0)
                 {
                     return 0;
                 }
-                return rating / articles.Count;
+                return rating / Articles.Count;
             }
         }
 
+        [XmlIgnore]
         public bool this[Frequency frequency]
         {
             get
             {
-                if (this.frequency == frequency)
+                if (this.Frequency == frequency)
                 {
                     return true;
                 }
                 return false;
             }
         }
+
 
         public void AddArticles(params Article[] articles)
         {
@@ -147,6 +133,7 @@ namespace Lab9
             }
         }
 
+
         public override string ToString()
         {
             string articlesList = "\n";
@@ -162,12 +149,14 @@ namespace Lab9
             return "Name: " + Name + ", Frequency: " + Frequency + ", Release Date: " + ReleaseDate.ToShortDateString() + ", Circulation: " + Circulation + ", \nArticles:" + articlesList + "Editors:" + editorsList;
         }
 
+
         public virtual string ToShortString()
         {
-            return "Name: " + name + ", Frequency: " + frequency + ", Release Date: " + releaseDate + ", Circulation: " + circulation + ", Rating: " + Rating;
+            return "Name: " + Name + ", Frequency: " + Frequency + ", Release Date: " + ReleaseDate + ", Circulation: " + Circulation + ", Rating: " + Rating;
         }
 
         // Lab 5
+
 
         public override bool Equals(object obj)
         {
@@ -177,6 +166,7 @@ namespace Lab9
             return (Name == magazine.Name && Frequency == magazine.Frequency && ReleaseDate == magazine.ReleaseDate && Circulation == magazine.Circulation && Editors == magazine.Editors && Articles == magazine.Articles);
         }
 
+
         public static bool operator ==(Magazine magazine1, Magazine magazine2)
         {
 
@@ -185,11 +175,13 @@ namespace Lab9
             return magazine1.Name == magazine2.Name && magazine1.Frequency == magazine2.Frequency && magazine1.ReleaseDate == magazine2.ReleaseDate && magazine1.Circulation == magazine2.Circulation && magazine1.Editors == magazine2.Editors && magazine1.Articles == magazine2.Articles;
         }
 
+
         public static bool operator !=(Magazine magazine1, Magazine magazine2)
         {
             if ((object)magazine1 == null || (object)magazine2 == null) return true;
             return magazine1.Name != magazine2.Name || magazine1.Frequency != magazine2.Frequency || magazine1.ReleaseDate != magazine2.ReleaseDate || magazine1.Circulation != magazine2.Circulation || magazine1.Editors != magazine2.Editors || magazine1.Articles != magazine2.Articles;
         }
+
 
         public override int GetHashCode()
         {
@@ -197,15 +189,18 @@ namespace Lab9
         }
 
 
+
         object IRateAndCopy.DeepCopy()
         {
             return DeepCopy();
         }
+
         [XmlIgnore]
         double IRateAndCopy.Rating
         {
             get { return Rating; }
         }
+
 
         public IEnumerable<Article> GetArticlesWithMoreRating(double rating)
         {
@@ -218,6 +213,7 @@ namespace Lab9
             }
         }
 
+
         public IEnumerable<Article> GetArticlesWithSameTitle(string title)
         {
             foreach (Article article in Articles)
@@ -228,6 +224,7 @@ namespace Lab9
                 }
             }
         }
+
 
         public IEnumerable<Article> GetArticlesOfEditors()
         {
@@ -262,13 +259,8 @@ namespace Lab9
         }
 
 
-
-        public IEnumerator GetEnumerator()
-        {
-            return new EnumeratorForMagazine(this);
-        }
-
         // Lab 9
+
         public Magazine DeepCopy()
         {
             List<Article> articlesCopy = new List<Article>();
@@ -283,6 +275,7 @@ namespace Lab9
             }
             return new Magazine(Name, Frequency, ReleaseDate, Circulation, articlesCopy, editorsCopy);
         }
+
 
         public bool Save(string fileName)
         {
@@ -576,6 +569,7 @@ namespace Lab9
             {
                 stream = new FileStream(fileName, FileMode.Create, FileAccess.Write);
                 xmlSerializer.Serialize(stream, this);
+                stream.Flush();
                 return true;
             }
             catch (Exception ex)
@@ -598,6 +592,7 @@ namespace Lab9
             {
                 stream = new FileStream(fileName, FileMode.Open);
                 Magazine magazine = (Magazine)xmlSerializer.Deserialize(stream);
+                stream.Flush();
                 Name = magazine.Name;
                 Frequency = magazine.Frequency;
                 ReleaseDate = magazine.ReleaseDate;
@@ -633,6 +628,7 @@ namespace Lab9
             {
                 stream = new FileStream(fileName, FileMode.Create, FileAccess.Write);
                 serializer.WriteObject(stream, this);
+                stream.Flush();
                 return true;
             }
             catch (Exception ex)
@@ -654,6 +650,7 @@ namespace Lab9
             {
                 stream = new FileStream(fileName, FileMode.Open);
                 Magazine magazine = (Magazine)serializer.ReadObject(stream);
+                stream.Flush();
                 Name = magazine.Name;
                 Frequency = magazine.Frequency;
                 ReleaseDate = magazine.ReleaseDate;
@@ -682,47 +679,5 @@ namespace Lab9
         }
 
 
-    }
-    file class EnumeratorForMagazine : IEnumerator
-    {
-        private Magazine thisMagazine;
-        private int index = -1;
-
-        public Magazine ThisMagazine
-        {
-            get { return thisMagazine; }
-            set { thisMagazine = value; }
-        }
-        public EnumeratorForMagazine(Magazine magazine)
-        {
-            ThisMagazine = magazine;
-        }
-
-        public bool MoveNext()
-        {
-            while (++index < ThisMagazine.Articles.Count)
-            {
-                Article curArticle = (Article)ThisMagazine.Articles[index];
-                if (!thisMagazine.Editors.Contains(curArticle.Author))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public void Reset() { index = -1; }
-        public object Current
-        {
-            get
-            {
-                if (index < 0 || index >= ThisMagazine.Articles.Count)
-                {
-                    return new Article();
-                }
-                return ThisMagazine.Articles[index];
-            }
-
-        }
     }
 }

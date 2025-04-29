@@ -12,50 +12,26 @@ namespace Lab9
         Property
     }
 
-    [DataContract(Namespace = "http://schemas.datacontract.org/2004/07/Lab9")]
     [Serializable]
+    [DataContract]
     [XmlType("Edition")]
     public class Edition: IComparable, IComparer<Edition>, INotifyPropertyChanged
     {
-        protected string name;
-        protected System.DateTime releaseDate;
-        protected int circulation;
+        //protected string name;
+        //protected System.DateTime releaseDate;
+        //protected int circulation;
 
         [DataMember]
-        [XmlAttribute("Name")]
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
+        [XmlElement("Name")]
+        public string Name{get;set;}
 
         [DataMember]
-        [XmlAttribute("ReleaseDate")]
-        public System.DateTime ReleaseDate
-        {
-            get { return releaseDate; }
-            set 
-            { 
-                releaseDate = value;
-                OnPropertyChanged("ReleaseDate");
-            }
-        }
+        [XmlElement("ReleaseDate")]
+        public System.DateTime ReleaseDate{get;set;}
 
         [DataMember]
-        [XmlAttribute("Circulation")]
-        public int Circulation
-        {
-            get { return circulation; }
-            set
-            {
-                if (value < 0)
-                {
-                    throw new Exception("Circulation must be a non-negative number.");
-                }
-                circulation = value;
-                OnPropertyChanged("Circulation");
-            }
-        }
+        [XmlElement("Circulation")]
+        public int Circulation {get;set;}
 
         public Edition()
         {

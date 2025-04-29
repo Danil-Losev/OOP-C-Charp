@@ -8,8 +8,6 @@ using System.Xml.Serialization;
 
 namespace Lab9
 {
-    [DataContract(Namespace = "http://schemas.datacontract.org/2004/07/Lab9")]
-    [Serializable]
     public enum Frequency
     {
         Weekly,
@@ -23,8 +21,8 @@ namespace Lab9
     public class Article : IRateAndCopy
     {
         [DataMember] [XmlElement("Author")] public Person Author { get; set; }
-        [DataMember] [XmlAttribute] public string Title { get; set; }
-        [DataMember] [XmlAttribute] public double Rating { get; set; }
+        [DataMember] [XmlElement] public string Title { get; set; }
+        [DataMember] [XmlElement] public double Rating { get; set; }
 
         public Article()
         {
