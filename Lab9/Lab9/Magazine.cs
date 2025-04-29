@@ -16,7 +16,7 @@ namespace Lab9
     public class Magazine : Edition, IRateAndCopy
     {
         [DataMember]
-        [XmlAttribute("Name")]
+        [XmlElement("Frequency")]
         public Frequency Frequency{get;set;}
 
         [DataMember]
